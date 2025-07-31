@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <!-- Include the CesiumJS JavaScript and CSS files -->
+  <script src="https://cesium.com/downloads/cesiumjs/releases/1.131/Build/Cesium/Cesium.js"></script>
+  <link href="https://cesium.com/downloads/cesiumjs/releases/1.131/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+        .clickablep{
+            cursor: pointer; /* Changes cursor to hand pointer on hover */
+        }
+    </style>
+</head>
+<body>
+    <!-- <div class="container "> -->
+        <div class="row">
+        <!-- First Column -->
+            <div class="col-1 bg-light border text-center">
+                <h4><u>Datasets</u></h4>
+                <p class="clickablep" id="melbourneData">Melbourne</p>
+                <p class="clickablep" id="manhatten">Manhatten, NY</p>
+                <p class="clickablep" id="i3sData">Frankfurt</p>
+                
+            </div>
+        <!-- Second Column -->
+            <div class="col-11 bg-light border">
+                <div id="cesiumContainer"></div>
+            </div>
+        </div>
+    <!-- </div> -->
+  <!-- <div id="cesiumContainer"></div> -->
+<script type="module">
+    // Your access token can be found at: https://ion.cesium.com/tokens.
+    // Replace `your_access_token` with your Cesium ion access token.
+    Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJkODk4YzQzYi04ZDdhLTQxNWItYTgyNy1lNjIxMmRiNjc2MzciLCJpZCI6MzI2ODU4LCJpYXQiOjE3NTM4NDY4NDd9.3RoYx4cqN3pvUMCS9bRACT79ZPl8S9em72t_7h5NMK4';
+
+
+    // Initialize the Cesium Viewer in the HTML element with the `cesiumContainer` ID.
+    const viewer = new Cesium.Viewer('cesiumContainer', {
+      terrain: Cesium.Terrain.fromWorldTerrain(),
+    });    
+
+
+    // Add Cesium OSM Buildings, a global 3D buildings layer.
+    // const buildingTileset = await Cesium.createOsmBuildingsAsync();
+    //viewer.scene.primitives.add(buildingTileset);
+
+    //2. global curated datasets (added as asset)
+    const melbourneData = viewer.scene.primitives.add(
+        await Cesium.Cesium3DTileset.fromIonAssetId(69380),
+    );
+    viewer.scene.primitives.add(melbourneData);
+
+    //3. add uploded data to map
+    const manhatten = viewer.scene.primitives.add(
+        await Cesium.Cesium3DTileset.fromIonAssetId(3589919),
+    );
+
+    viewer.scene.primitives.add(manhatten);
+
+
+    //4. add from 3rd party data source
+    
+    try {
+
+        const geoidService = await Cesium.ArcGISTiledElevationTerrainProvider.fromUrl(
+            "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/EGM2008/ImageServer",
+        );
+
+        const i3sData = await Cesium.I3SDataProvider.fromUrl(
+            "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/Frankfurt2017_vi3s_18/SceneServer/layers/0",
+            {geoidTiledTerrainProvider: geoidService}
+        );
+        viewer.scene.primitives.add(i3sData);
+
+    } catch (error) {
+        console.log(`There was an error creating the I3S Data Provider: ${error}`);
+    }
+
+
+    document.getElementById('melbourneData').addEventListener('click', () => {
+        viewer.zoomTo(melbourneData);
+    });
+
+    document.getElementById('manhatten').addEventListener('click', () => {
+       viewer.zoomTo(manhatten);
+    });
+
+
+    document.getElementById('i3sData').addEventListener('click', () => {
+        
+        viewer.camera.setView({
+            destination: Cesium.Cartesian3.fromRadians(0.152,0.8732, 1000)
+        });
+    });
+
+    
+
+
+</script>
+
+</body>
+</html>
