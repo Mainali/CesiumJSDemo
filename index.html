@@ -18,9 +18,20 @@
         <div class="row">
         <!-- First Column -->
             <div class="col-1 bg-light border text-center">
-                <h4><u>Datasets</u></h4>
-                <p class="clickablep" id="melbourneData">Melbourne</p>
+                <h3><u>Datasets</u></h3>
+
+                <br>
+                <h5>Global Curated datasets:</h5>
+                <p class="clickablep" id="melbourneData">Melbourne Photogrammetry</p>
+                <p class="clickablep" id="sydneyData">Vexcel 3D Cities Data for Sydney</p>
+                <p class="clickablep" id="bostonData">Nearmap Boston Photogrammetry</p>
+
+                <br>
+                <h5>Uploaded 3D dataset:</h5>
                 <p class="clickablep" id="manhatten">Manhatten, NY</p>
+
+                <br>
+                <h5>From Third Party data source:</h5>
                 <p class="clickablep" id="i3sData">Frankfurt</p>
                 
             </div>
@@ -51,7 +62,17 @@
     const melbourneData = viewer.scene.primitives.add(
         await Cesium.Cesium3DTileset.fromIonAssetId(69380),
     );
-    viewer.scene.primitives.add(melbourneData);
+    
+
+    const sydneyData = viewer.scene.primitives.add(
+        await Cesium.Cesium3DTileset.fromIonAssetId(2644092),
+    );
+    viewer.scene.primitives.add(sydneyData);
+
+    const bostonData = viewer.scene.primitives.add(
+        await Cesium.Cesium3DTileset.fromIonAssetId(354759),
+    );
+    viewer.scene.primitives.add(bostonData);
 
     //3. add uploded data to map
     const manhatten = viewer.scene.primitives.add(
@@ -82,6 +103,12 @@
 
     document.getElementById('melbourneData').addEventListener('click', () => {
         viewer.zoomTo(melbourneData);
+    });
+    document.getElementById('sydneyData').addEventListener('click', () => {
+        viewer.zoomTo(sydneyData);
+    });
+    document.getElementById('bostonData').addEventListener('click', () => {
+        viewer.zoomTo(bostonData);
     });
 
     document.getElementById('manhatten').addEventListener('click', () => {
